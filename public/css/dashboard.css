@@ -1,0 +1,40 @@
+* {
+    font-family: "Inter", sans-serif;
+}
+body {
+    background: #f4f7f6;
+}
+.brand-grad {
+    background: linear-gradient(135deg, #b9dda3 0%, #0c6b4f 100%);
+}
+
+summary {
+    list-style: none;
+}
+summary::-webkit-details-marker {
+    display: none;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 250px));
+    gap: 1.25rem;
+}
+@media (max-width: 520px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.hero-grad {
+    background: linear-gradient(100deg, #d6f0c4 0%, #8cc7a0 48%, #0b6a50 100%);
+}
+
+.fav svg {
+    color: #475569;
+    fill: none;
+}
+.fav.is-saved svg {
+    color: #ef4444;
+    fill: currentColor;
+}
