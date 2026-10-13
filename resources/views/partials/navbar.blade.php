@@ -1,10 +1,12 @@
 @php
-    $menu = 'flex items-center gap-2 px-3.5 h-10 rounded-xl text-[13px] font-medium text-slate-600 hover:bg-slate-50 transition';
+    $menu =
+        'flex items-center gap-2 px-3.5 h-10 rounded-xl text-[13px] font-medium text-slate-600 hover:bg-slate-50 transition';
     $menuOn = 'flex items-center gap-2 px-3.5 h-10 rounded-xl text-[13px] font-bold bg-emerald-50 text-[#076653]';
 @endphp
 
 <header class="sticky top-0 z-30 bg-white border-b border-slate-100">
-    <div class="w-full max-w-[1280px] mx-auto px-4 sm:px-7 h-[62px] flex items-center gap-3">
+    <div class="w-full px-4 sm:px-7 h-[62px] flex items-center gap-3">
+
         <details class="relative shrink-0">
             <summary class="flex items-center gap-3 cursor-pointer select-none">
                 <span class="brand-grad w-11 h-11 rounded-xl flex items-center justify-center text-[#0C342C] shadow-sm">
@@ -21,16 +23,14 @@
                 <p class="px-3 py-2 text-xs text-slate-400 truncate">{{ auth()->user()->email }}</p>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit"
-                        class="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50">
+                    <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50">
                         <x-icon name="logout" class="w-4 h-4" /> Keluar
                     </button>
                 </form>
             </div>
         </details>
 
-        <div
-            class="hidden lg:flex shrink-0 items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 h-10 text-xs font-medium text-slate-700 whitespace-nowrap">
+        <div class="hidden lg:flex shrink-0 items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 h-10 text-xs font-medium text-slate-700 whitespace-nowrap">
             <x-icon name="pin" class="w-3.5 h-3.5 text-[#076653]" :filled="true" />
             {{ $area ?? 'Malang, Jawa Timur' }}
             <x-icon name="chevron-down" class="w-3.5 h-3.5 text-slate-400" />
@@ -42,8 +42,7 @@
                 class="w-full h-10 pl-10 pr-3 rounded-xl bg-slate-100 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#076653]/20">
         </form>
 
-        <button type="button"
-            class="hidden md:flex shrink-0 items-center gap-1.5 h-10 px-3.5 rounded-xl bg-slate-100 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
+        <button type="button" class="hidden md:flex shrink-0 items-center gap-1.5 h-10 px-3.5 rounded-xl bg-slate-100 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
             <x-icon name="sliders" class="w-3.5 h-3.5 text-[#076653]" /> Filter
         </button>
 
@@ -69,8 +68,8 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-[#076653]"></span>
             </a>
 
-            <a href="#"
-                class="brand-grad ml-1 flex items-center gap-2 px-4 h-10 rounded-xl text-[13px] font-bold text-[#0C342C] shadow-sm hover:brightness-105 transition">
+            <a href="{{ route('jual') }}"
+                class="brand-grad ml-1 flex items-center gap-2 px-4 h-10 rounded-xl text-[13px] font-bold text-[#0C342C] shadow-sm hover:brightness-105 transition {{ request()->routeIs('jual') ? 'ring-4 ring-emerald-200/80' : '' }}">
                 <x-icon name="plus-circle" class="w-4 h-4" />
                 <span class="hidden sm:inline">Jual Barang</span>
             </a>

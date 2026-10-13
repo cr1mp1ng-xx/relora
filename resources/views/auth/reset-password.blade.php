@@ -15,7 +15,7 @@
 
             <form id="form-reset" method="POST" action="{{ route('password.update') }}" class="space-y-4" novalidate>
                 @csrf
-                <input name="email" type="email" value="{{ old('email') }}" placeholder="Email" autocomplete="email"
+                <input name="email" type="email" value="{{ old('email') }}" placeholder="Email@example.com" autocomplete="email"
                        class="input-field w-full text-base text-slate-700 px-5 py-3 rounded-xl">
                 <input name="password" type="password" placeholder="Password baru (min. 8 karakter)" autocomplete="new-password"
                        class="input-field w-full text-base text-slate-700 px-5 py-3 rounded-xl">

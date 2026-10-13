@@ -1,7 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
-class DashboardController extends Controller {
+use App\Models\Produk;
+use Illuminate\Support\Facades\Schema;
+
+class DashboardController extends Controller{
     public function index() {
         $produk = [
             ['id' => 1, 'nama' => 'Jaket Denim Oversize Vintage', 'penjual' => 'Ahmad Rizky', 'harga' => 185000, 'lokasi' => 'Lowokwaru, Malang', 'jarak' => '2.5 km', 'foto' => 'images/produk/jaket-denim.jpg',    'cod' => true, 'disimpan' => true],
@@ -9,6 +12,27 @@ class DashboardController extends Controller {
             ['id' => 3, 'nama' => 'Sepatu Sneaker Canvas Casual',  'penjual' => 'Dian Sastro',  'harga' => 210000, 'lokasi' => 'Klojen, Malang',    'jarak' => '1.2 km', 'foto' => 'images/produk/sepatu-sneaker.jpg',  'cod' => true, 'disimpan' => false],
             ['id' => 4, 'nama' => 'Sweater Hoodie Fleece Grey',    'penjual' => 'Eko Prasetyo', 'harga' => 120000, 'lokasi' => 'Blimbing, Malang',  'jarak' => '7.8 km', 'foto' => 'images/produk/sweater-hoodie.jpg',  'cod' => true, 'disimpan' => false],
         ];
+
+        $dariDb = [];
+        if (Schema::hasTable('produks')) {
+            $dariDb = Produk::with('user')
+                ->where('status', 'aktif')
+                ->latest()
+                ->get()
+                ->map(fn ($p) => [
+                    'id'       => $p->id,
+                    'nama'     => $p->judul,
+                    'penjual'  => $p->user->name ?? 'Penjual',
+                    'harga'    => $p->harga,
+                    'lokasi'   => $p->area,
+                    'jarak'    => ((float) $p->jarak) . ' km',
+                    'foto'     => isset($p->foto[0]) ? 'storage/' . $p->foto[0] : 'images/produk/jaket-denim.jpg',
+                    'cod'      => true,
+                    'disimpan' => false,
+                ])
+                ->all();
+        }
+        $produk = array_merge($dariDb, $produk);
 
         return view('dashboard', [
             'produk'  => $produk,

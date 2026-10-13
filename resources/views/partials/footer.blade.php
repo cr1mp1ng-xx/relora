@@ -3,9 +3,13 @@
         <p><b class="text-slate-800 tracking-wide">RELORA COD MARKET</b> &nbsp;&mdash; Marketplace Khusus Bayar di Tempat (Tanpa Transfer).</p>
 
         <div class="flex flex-wrap items-center gap-x-8 gap-y-2 font-medium text-slate-600">
-            <span>Cek Fisik Langsung</span>
-            <span>Uang Pas Tunai</span>
-            <span>Titik Temu Ramai</span>
+            @hasSection('footer_links')
+                @yield('footer_links')
+            @else
+                <span>Cek Fisik Langsung</span>
+                <span>Uang Pas Tunai</span>
+                <span>Titik Temu Ramai</span>
+            @endif
         </div>
     </div>
 </footer>

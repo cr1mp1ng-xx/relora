@@ -1,9 +1,11 @@
 @extends('layouts.guest')
 @section('title', 'Sign In - Relora')
 @section('content')
+
 @php
     $startMode = ($mode ?? 'signin') === 'signup' || $errors->hasBag('register') ? 'signup' : 'signin';
 @endphp
+
 @include('partials.scene')
 
 <main id="card" data-start="{{ $startMode }}" class="relative z-10 w-full max-w-[900px] bg-white rounded-[32px] overflow-hidden card-shadow">
@@ -13,7 +15,7 @@
 
             <form id="form-signin" method="POST" action="{{ route('login.store') }}" class="space-y-5" novalidate>
                 @csrf
-                <input name="identity" type="text" value="{{ old('identity') }}" placeholder="Username / Email" autocomplete="username"
+                <input name="identity" type="text" value="{{ old('identity') }}" placeholder="Email@example.com" autocomplete="username"
                        class="input-field w-full text-base text-slate-700 px-5 py-3 rounded-xl">
                 <input name="password" type="password" placeholder="Password" autocomplete="current-password"
                        class="input-field w-full text-base text-slate-700 px-5 py-3 rounded-xl">
@@ -50,7 +52,7 @@
                 @csrf
                 <input name="nama" type="text" value="{{ old('nama') }}" placeholder="Nama" autocomplete="name"
                        class="input-field w-full text-base text-slate-700 px-5 py-3 rounded-xl">
-                <input name="email" type="email" value="{{ old('email') }}" placeholder="Email" autocomplete="email"
+                <input name="email" type="email" value="{{ old('email') }}" placeholder="Email@example.com" autocomplete="email"
                        class="input-field w-full text-base text-slate-700 px-5 py-3 rounded-xl">
                 <input name="password" type="password" placeholder="Password (min. 8 karakter)" autocomplete="new-password"
                        class="input-field w-full text-base text-slate-700 px-5 py-3 rounded-xl">

@@ -1,6 +1,6 @@
 @props(['name', 'filled' => false])
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="{{ $filled ? 'currentColor' : 'none' }}"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"fill="{{ $filled ? 'currentColor' : 'none' }}"
     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
     {{ $attributes->merge(['class' => 'w-4 h-4']) }}>
     @switch($name)
@@ -93,6 +93,43 @@
         @case('check-circle')
             <circle cx="12" cy="12" r="10" />
             <path d="m9 12 2 2 4-4" stroke="#fff" />
+        @break
+
+        @case('image')
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+            <circle cx="9" cy="9" r="2" />
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+        @break
+
+        @case('camera')
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+            <circle cx="12" cy="13" r="3" />
+        @break
+
+        @case('plus')
+            <path d="M5 12h14" />
+            <path d="M12 5v14" />
+        @break
+
+        @case('check')
+            <path d="M20 6 9 17l-5-5" />
+        @break
+
+        @case('x')
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+        @break
+
+        @case('route')
+            <circle cx="6" cy="19" r="3" />
+            <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
+            <circle cx="18" cy="5" r="3" />
+        @break
+
+        @case('upload')
+            <path d="M12 13v8" />
+            <path d="m8 17 4-4 4 4" />
+            <path d="M20 17.4A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 15.25" />
         @break
 
         @case('logout')
