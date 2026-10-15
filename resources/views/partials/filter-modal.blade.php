@@ -20,7 +20,6 @@
                     <p class="text-sm text-slate-500 mt-0.5">Atur batas jarak dan harga untuk menemukan barang yang sesuai.</p>
                 </div>
             </div>
-            <span class="shrink-0 bg-emerald-50 border border-emerald-200 text-[#076653] text-xs font-bold px-3 py-1.5 rounded-full">Khusus COD</span>
         </div>
 
         <div class="px-6 pt-5 pb-6">
