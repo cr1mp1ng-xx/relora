@@ -1,8 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Support\FilterBarang;
+use Illuminate\Http\Request;
+
 class WishlistController extends Controller {
-    public function index() {
+    public function index(Request $request) {
+        [$jarak, $harga] = FilterBarang::baca($request);
+
         $wishlist = [
             [
                 'id'       => 1,
@@ -11,6 +16,7 @@ class WishlistController extends Controller {
                 'harga'    => 185000,
                 'lokasi'   => 'Lowokwaru, Malang',
                 'jarak'    => '2.5 km',
+                'jarak_km' => 2.5,
                 'foto'     => 'images/jaket-denim.jpg',
                 'cod'      => true,
                 'disimpan' => now()->timestamp,
@@ -18,8 +24,11 @@ class WishlistController extends Controller {
         ];
 
         return view('wishlist', [
-            'wishlist' => $wishlist,
-            'area'     => 'Malang, Jawa Timur',
+            'wishlist'   => FilterBarang::terapkan($wishlist, $jarak, $harga),
+            'area'       => 'Malang, Jawa Timur',
+            'jarak'      => $jarak,
+            'harga'      => $harga,
+            'titikAcuan' => 'Klojen, Malang',
         ]);
     }
 }
