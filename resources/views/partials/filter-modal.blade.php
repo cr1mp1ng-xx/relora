@@ -19,7 +19,6 @@
                 </div>
             </div>
             <div class="shrink-0 flex items-center gap-2">
-                <span class="bg-emerald-50 border border-emerald-200 text-[#076653] text-xs font-bold px-3 py-1.5 rounded-full">Khusus COD</span>
                 <button type="button" data-filter-close aria-label="Tutup filter"
                         class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition">
                     <x-icon name="x" class="w-5 h-5" />
