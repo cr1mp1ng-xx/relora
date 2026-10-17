@@ -40,8 +40,7 @@
         </form>
 
         @if (request()->routeIs('dashboard', 'wishlist'))
-            <button type="button" data-open-filter
-                class="relative flex shrink-0 items-center gap-1.5 h-10 px-3.5 rounded-xl bg-slate-100 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
+            <button type="button" data-open-filter class="relative flex shrink-0 items-center gap-1.5 h-10 px-3.5 rounded-xl bg-slate-100 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
                 <x-icon name="sliders" class="w-3.5 h-3.5 text-[#076653]" />
                 <span class="hidden sm:inline">Filter</span>
                 @if (($jarak ?? 50) < 50 || ($harga ?? 0) > 0)
@@ -68,8 +67,8 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-[#076653]"></span>
             </a>
 
-            <a href="{{ route('jual') }}"
-                class="brand-grad ml-1 flex items-center gap-2 px-4 h-10 rounded-xl text-[13px] font-bold text-[#0C342C] shadow-sm hover:brightness-105 transition {{ request()->routeIs('jual') ? 'ring-4 ring-emerald-200/80' : '' }}">
+            <a href="{{ route('barang.saya') }}"
+                class="brand-grad ml-1 flex items-center gap-2 px-4 h-10 rounded-xl text-[13px] font-bold text-[#0C342C] shadow-sm hover:brightness-105 transition {{ request()->routeIs('jual', 'barang.saya') ? 'ring-4 ring-emerald-200/80' : '' }}">
                 <x-icon name="plus-circle" class="w-4 h-4" />
                 <span class="hidden sm:inline">Jual Barang</span>
             </a>

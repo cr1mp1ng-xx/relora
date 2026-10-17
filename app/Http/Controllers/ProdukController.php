@@ -5,8 +5,46 @@ namespace App\Http\Controllers;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class ProdukController extends Controller {
+    public function index(){
+        $contoh = [
+            ['judul' => 'Sepatu Sneaker Canvas Casual', 'harga' => 210000, 'status' => 'tersedia', 'foto' => 'images/barang-saya/sepatu.jpg',      'waktu' => now()->subDays(1)->timestamp],
+            ['judul' => 'Kaos Polo Katun Premium',      'harga' => 75000,  'status' => 'dipesan',  'foto' => 'images/barang-saya/kaos-polo.jpg',   'waktu' => now()->subDays(2)->timestamp],
+            ['judul' => 'Jaket Denim Oversize Vintage', 'harga' => 185000, 'status' => 'terjual',  'foto' => 'images/barang-saya/jaket-denim.jpg', 'waktu' => now()->subDays(3)->timestamp],
+        ];
+
+        $milikku = [];
+        if (Schema::hasTable('produks')) {
+            $milikku = Produk::where('user_id', Auth::id())
+                ->where('status', '!=', 'arsip')
+                ->latest()
+                ->get()
+                ->map(fn ($p) => [
+                    'judul'  => $p->judul,
+                    'harga'  => $p->harga,
+                    'status' => $p->status === 'aktif' ? 'tersedia' : $p->status, // aktif = tersedia
+                    'foto'   => isset($p->foto[0]) ? 'storage/' . $p->foto[0] : null,
+                    'waktu'  => $p->created_at->timestamp,
+                ])
+                ->all();
+        }
+
+        $barang = array_merge($milikku, $contoh);
+
+        $jumlah = ['semua' => count($barang)];
+        foreach (['tersedia', 'dipesan', 'terjual'] as $status) {
+            $jumlah[$status] = count(array_filter($barang, fn ($b) => $b['status'] === $status));
+        }
+
+        return view('barang-saya', [
+            'barang' => $barang,
+            'jumlah' => $jumlah,
+            'area'   => 'Malang, Jawa Timur',
+        ]);
+    }
+
     public function create() {
         return view('jual', ['area' => 'Malang, Jawa Timur']);
     }
@@ -62,6 +100,6 @@ class ProdukController extends Controller {
             return redirect()->route('dashboard')->with('status', 'Produk berhasil diupload dan tampil di Beranda.');
         }
 
-        return redirect()->route('jual')->with('status', 'Draf produk berhasil disimpan.');
+        return redirect()->route('barang.saya')->with('status', 'Draf produk berhasil disimpan.');
     }
 }

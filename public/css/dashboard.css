@@ -106,3 +106,25 @@ summary::-webkit-details-marker {
     border-color: #076653;
     color: #fff;
 }
+
+.tpill {
+    height: 2.25rem;
+    padding: 0 1rem;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #334155;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: 0.15s;
+}
+
+.tpill:hover {
+    border-color: #076653;
+}
+
+.tpill.is-on {
+    background: #076653;
+    border-color: #076653;
+    color: #fff;
+}
