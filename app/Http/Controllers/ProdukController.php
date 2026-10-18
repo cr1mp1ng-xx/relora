@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 
 class ProdukController extends Controller {
-    public function index(){
+    public function index() {
         $contoh = [
             ['judul' => 'Sepatu Sneaker Canvas Casual', 'harga' => 210000, 'status' => 'tersedia', 'foto' => 'images/barang-saya/sepatu.jpg',      'waktu' => now()->subDays(1)->timestamp],
             ['judul' => 'Kaos Polo Katun Premium',      'harga' => 75000,  'status' => 'dipesan',  'foto' => 'images/barang-saya/kaos-polo.jpg',   'waktu' => now()->subDays(2)->timestamp],
@@ -21,7 +21,8 @@ class ProdukController extends Controller {
                 ->where('status', '!=', 'arsip')
                 ->latest()
                 ->get()
-                ->map(fn ($p) => [
+                ->map(fn($p) => [
+                    'id'     => $p->id,
                     'judul'  => $p->judul,
                     'harga'  => $p->harga,
                     'status' => $p->status === 'aktif' ? 'tersedia' : $p->status, // aktif = tersedia
@@ -35,7 +36,7 @@ class ProdukController extends Controller {
 
         $jumlah = ['semua' => count($barang)];
         foreach (['tersedia', 'dipesan', 'terjual'] as $status) {
-            $jumlah[$status] = count(array_filter($barang, fn ($b) => $b['status'] === $status));
+            $jumlah[$status] = count(array_filter($barang, fn($b) => $b['status'] === $status));
         }
 
         return view('barang-saya', [
@@ -49,6 +50,7 @@ class ProdukController extends Controller {
         return view('jual', ['area' => 'Malang, Jawa Timur']);
     }
 
+    // Simpan produk (tombol "Upload Produk" atau "Simpan Draf")
     public function store(Request $request) {
         $upload = $request->input('aksi') !== 'draf';
 
@@ -101,5 +103,20 @@ class ProdukController extends Controller {
         }
 
         return redirect()->route('barang.saya')->with('status', 'Draf produk berhasil disimpan.');
+    }
+
+    public function ubahStatus(Request $request, Produk $produk) {
+        // hanya pemilik barang yang boleh mengubah
+        abort_unless((int) $produk->user_id === (int) Auth::id(), 403);
+
+        $data = $request->validate([
+            'status' => ['required', 'in:tersedia,dipesan,terjual,arsip'],
+        ]);
+
+        $produk->update([
+            'status' => $data['status'] === 'tersedia' ? 'aktif' : $data['status'],
+        ]);
+
+        return response()->json(['ok' => true, 'status' => $data['status']]);
     }
 }
