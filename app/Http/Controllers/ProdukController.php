@@ -6,8 +6,14 @@ use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 
 class ProdukController extends Controller {
+    private const KATEGORI = [
+        'Fashion Pria', 'Fashion Wanita', 'Sepatu', 'Tas & Aksesoris', 'Elektronik',
+        'Gadget', 'Buku & Alat Kuliah', 'Olahraga', 'Perabot', 'Lainnya',
+    ];
+
     public function index() {
         $contoh = [
             ['judul' => 'Sepatu Sneaker Canvas Casual', 'harga' => 210000, 'status' => 'tersedia', 'foto' => 'images/barang-saya/sepatu.jpg',      'waktu' => now()->subDays(1)->timestamp],
@@ -21,11 +27,11 @@ class ProdukController extends Controller {
                 ->where('status', '!=', 'arsip')
                 ->latest()
                 ->get()
-                ->map(fn($p) => [
+                ->map(fn ($p) => [
                     'id'     => $p->id,
                     'judul'  => $p->judul,
                     'harga'  => $p->harga,
-                    'status' => $p->status === 'aktif' ? 'tersedia' : $p->status, // aktif = tersedia
+                    'status' => $p->status === 'aktif' ? 'tersedia' : $p->status,
                     'foto'   => isset($p->foto[0]) ? 'storage/' . $p->foto[0] : null,
                     'waktu'  => $p->created_at->timestamp,
                 ])
@@ -36,7 +42,7 @@ class ProdukController extends Controller {
 
         $jumlah = ['semua' => count($barang)];
         foreach (['tersedia', 'dipesan', 'terjual'] as $status) {
-            $jumlah[$status] = count(array_filter($barang, fn($b) => $b['status'] === $status));
+            $jumlah[$status] = count(array_filter($barang, fn ($b) => $b['status'] === $status));
         }
 
         return view('barang-saya', [
@@ -50,8 +56,7 @@ class ProdukController extends Controller {
         return view('jual', ['area' => 'Malang, Jawa Timur']);
     }
 
-    // Simpan produk (tombol "Upload Produk" atau "Simpan Draf")
-    public function store(Request $request) {
+    public function store(Request $request)  {
         $upload = $request->input('aksi') !== 'draf';
 
         $request->validate([
@@ -60,7 +65,7 @@ class ProdukController extends Controller {
             'area'      => ['required', 'string', 'max:100'],
             'jarak'     => ['required', 'numeric', 'min:0', 'max:50'],
             'nego'      => ['required', 'in:pas,nego'],
-            'deskripsi' => $upload ? ['required', 'string', 'min:30'] : ['nullable', 'string'],
+            'deskripsi' => $upload ? ['required', 'string', 'min:30', 'max:500'] : ['nullable', 'string', 'max:500'],
             'foto'      => $upload ? ['required', 'array', 'min:1', 'max:5'] : ['nullable', 'array', 'max:5'],
             'foto.*'    => ['image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ], [
@@ -74,6 +79,7 @@ class ProdukController extends Controller {
             'jarak.max'          => 'Estimasi jarak maksimal 50 km.',
             'deskripsi.required' => 'Deskripsi barang wajib diisi.',
             'deskripsi.min'      => 'Deskripsi minimal 30 karakter.',
+            'deskripsi.max'      => 'Deskripsi maksimal 500 karakter.',
             'foto.required'      => 'Tambahkan minimal 1 foto produk.',
             'foto.max'           => 'Maksimal 5 foto.',
             'foto.*.image'       => 'File harus berupa gambar.',
@@ -105,8 +111,51 @@ class ProdukController extends Controller {
         return redirect()->route('barang.saya')->with('status', 'Draf produk berhasil disimpan.');
     }
 
+    public function edit(Produk $produk) {
+        abort_unless((int) $produk->user_id === (int) Auth::id(), 403);
+
+        return view('edit-barang', [
+            'produk'       => $produk,
+            'kategori'     => self::KATEGORI,
+            'penjual'      => Auth::user(),
+            'totalTerjual' => Produk::where('user_id', Auth::id())->where('status', 'terjual')->count(),
+            'area'         => 'Malang, Jawa Timur',
+        ]);
+    }
+
+    public function update(Request $request, Produk $produk) {
+        abort_unless((int) $produk->user_id === (int) Auth::id(), 403);
+
+        $harga = $request->input('harga');
+        $request->merge(['harga' => is_scalar($harga) ? preg_replace('/\D/', '', (string) $harga) : '']);
+
+        $data = $request->validate([
+            'judul'     => ['required', 'string', 'max:100'],
+            'harga'     => ['required', 'integer', 'min:1000'],
+            'kategori'  => ['required', Rule::in(self::KATEGORI)],
+            'kondisi'   => ['required', 'in:baru,bekas'],
+            'deskripsi' => ['required', 'string', 'min:30', 'max:500'],
+            'area'      => ['required', 'string', 'max:100'],
+        ], [
+            'judul.required'     => 'Nama barang wajib diisi.',
+            'harga.required'     => 'Harga wajib diisi.',
+            'harga.integer'      => 'Harga harus berupa angka.',
+            'harga.min'          => 'Harga minimal Rp 1.000.',
+            'kategori.required'  => 'Pilih kategori barang.',
+            'kategori.in'        => 'Kategori tidak valid.',
+            'kondisi.required'   => 'Pilih kondisi barang.',
+            'deskripsi.required' => 'Deskripsi wajib diisi.',
+            'deskripsi.min'      => 'Deskripsi minimal 30 karakter.',
+            'deskripsi.max'      => 'Deskripsi maksimal 500 karakter.',
+            'area.required'      => 'Lokasi wajib diisi.',
+        ]);
+
+        $produk->update($data);
+
+        return redirect()->route('barang.saya')->with('status', 'Perubahan barang berhasil disimpan.');
+    }
+
     public function ubahStatus(Request $request, Produk $produk) {
-        // hanya pemilik barang yang boleh mengubah
         abort_unless((int) $produk->user_id === (int) Auth::id(), 403);
 
         $data = $request->validate([

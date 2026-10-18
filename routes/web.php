@@ -28,6 +28,8 @@ Route::middleware('auth')->group(function () {
     // Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
 
     Route::get('/barang-saya', [ProdukController::class, 'index'])->name('barang.saya');
+    Route::get('/barang-saya/{produk}/edit', [ProdukController::class, 'edit'])->name('barang.edit');
+    Route::patch('/barang-saya/{produk}', [ProdukController::class, 'update'])->name('barang.update');
     Route::patch('/barang-saya/{produk}/status', [ProdukController::class, 'ubahStatus'])->name('barang.status');
     Route::get('/jual', [ProdukController::class, 'create'])->name('jual');
     Route::post('/jual', [ProdukController::class, 'store'])->name('jual.store');

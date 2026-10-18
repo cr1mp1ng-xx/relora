@@ -14,7 +14,7 @@
         @elseif ($aksi === 'Arsip')
             <button type="button" data-aksi="arsip" class="{{ $kelas }}">{{ $aksi }}</button>
         @else
-            <a href="#" class="{{ $kelas }}">{{ $aksi }}</a>
+            <a href="{{ $aksi === 'Edit' ? $editUrl ?? '#' : '#' }}" @if ($aksi === 'Edit') data-edit @endif class="{{ $kelas }}">{{ $aksi }}</a>
         @endif
     @endforeach
 </div>

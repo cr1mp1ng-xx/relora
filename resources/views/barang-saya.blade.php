@@ -46,7 +46,7 @@
             'filled' => false,
         ],
         'dipesan' => [
-            'label' => 'Sedang Dipesan',
+            'label' => 'Sedang Diproses',
             'ket' => 'Barang sedang dalam proses transaksi',
             'icon' => 'zap',
             'warna' => 'bg-amber-100 text-amber-500',
@@ -66,9 +66,9 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-3">
             <h1 class="text-3xl font-bold text-slate-900">Barang Saya</h1>
-            <span id="jumlah-barang" class="bg-emerald-50 border border-emerald-200 text-[#076653] text-xs font-bold px-3 py-1 rounded-full">{{ count($barang) }}
-                Barang
-            </span>
+            <span id="jumlah-barang"
+                class="bg-emerald-50 border border-emerald-200 text-[#076653] text-xs font-bold px-3 py-1 rounded-full">{{ count($barang) }}
+                Barang</span>
         </div>
 
         <div class="flex items-center gap-3 text-xs text-slate-400">
@@ -95,13 +95,12 @@
             @php $st = $statusMap[$item['status']] ?? $statusMap['draf']; @endphp
             <article data-item data-status="{{ $item['status'] }}" data-price="{{ $item['harga'] }}"
                 data-time="{{ $item['waktu'] }}" data-judul="{{ $item['judul'] }}"
-                @if (!empty($item['id'])) data-id="{{ $item['id'] }}" data-url="{{ route('barang.status', $item['id']) }}" @endif
+                @if (!empty($item['id'])) data-id="{{ $item['id'] }}" data-url="{{ route('barang.status', $item['id']) }}" data-edit-url="{{ route('barang.edit', $item['id']) }}" @endif
                 class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex gap-4">
 
                 <div class="shrink-0 w-[120px] h-[120px] rounded-2xl overflow-hidden bg-slate-100">
                     @if ($item['foto'])
-                        <img src="{{ asset($item['foto']) }}" alt="{{ $item['judul'] }}"
-                            class="w-full h-full object-cover" loading="lazy">
+                        <img src="{{ asset($item['foto']) }}" alt="{{ $item['judul'] }}" class="w-full h-full object-cover" loading="lazy">
                     @else
                         <div class="w-full h-full brand-grad opacity-30 flex items-center justify-center">
                             <x-icon name="bag" class="w-8 h-8 text-[#0C342C]" />
@@ -111,10 +110,15 @@
 
                 <div class="min-w-0 flex-1 flex flex-col">
                     <h3 class="text-[15px] font-bold text-slate-900 truncate" title="{{ $item['judul'] }}">{{ $item['judul'] }}</h3>
-                    <p class="text-lg font-bold text-[#076653] mt-1">Rp {{ number_format($item['harga'], 0, ',', '.') }}</p>
+                    <p class="text-lg font-bold text-[#076653] mt-1">Rp {{ number_format($item['harga'], 0, ',', '.') }}
+                    </p>
 
                     <div data-status-area class="mt-auto flex flex-wrap items-center gap-2">
-                        @include('partials.status-area', ['st' => $st, 'tombol' => $tombol])
+                        @include('partials.status-area', [
+                            'st' => $st,
+                            'tombol' => $tombol,
+                            'editUrl' => !empty($item['id']) ? route('barang.edit', $item['id']) : '#',
+                        ])
                     </div>
                 </div>
             </article>
@@ -135,7 +139,8 @@
     <section class="mt-14 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 px-6 py-4">
         <div>
             <h2 class="text-sm font-bold text-slate-900">Panduan Transaksi Aman COD</h2>
-            <p class="text-xs text-slate-600 mt-0.5">Ketemu di tempat ramai seperti kafe kampus atau minimarket. Cek fisik barang sebelum bayar tunai!</p>
+            <p class="text-xs text-slate-600 mt-0.5">Ketemu di tempat ramai seperti kafe kampus atau minimarket. Cek fisik
+                barang sebelum bayar tunai!</p>
         </div>
         <span class="bg-white border border-emerald-200 text-[#076653] text-xs font-bold px-4 py-2 rounded-full">100% Anti
             Penipuan</span>
@@ -147,7 +152,8 @@
         </template>
     @endforeach
 
-    <div id="status-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="sm-title">
+    <div id="status-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog"
+        aria-modal="true" aria-labelledby="sm-title">
         <div data-sm-close class="absolute inset-0 bg-slate-900/50 backdrop-blur-[2px]"></div>
 
         <div class="relative w-full max-w-[453px] max-h-full overflow-y-auto bg-white rounded-3xl shadow-2xl">
@@ -173,7 +179,6 @@
                     </div>
                 </div>
 
-                {{-- Pilihan status --}}
                 <div class="mt-4 space-y-1.5">
                     @foreach ($opsiStatus as $kode => $o)
                         <label class="opsi">

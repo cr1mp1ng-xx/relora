@@ -345,3 +345,90 @@ html[data-theme="dark"] .opsi input:checked + .radio {
     background: #076653;
     border-color: #076653;
 }
+
+.kopsi {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    height: 2.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #334155;
+    transition: 0.15s;
+}
+
+.kopsi:hover {
+    background: #f8fafc;
+}
+
+.kopsi:has(input:checked) {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+}
+
+.kopsi .radio {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    border: 1.5px solid #cbd5e1;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    transition: 0.15s;
+}
+
+.kopsi .radio::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: #fff;
+    opacity: 0;
+}
+
+.kopsi input:checked + .radio {
+    background: #076653;
+    border-color: #076653;
+}
+
+.kopsi input:checked + .radio::after {
+    opacity: 1;
+}
+
+.kopsi input:focus-visible + .radio {
+    box-shadow: 0 0 0 3px rgba(7, 102, 83, 0.25);
+}
+
+html[data-theme="dark"] .kopsi {
+    background: #121c19;
+    border-color: #243530;
+    color: #cbd5d1;
+}
+
+html[data-theme="dark"] .kopsi:hover {
+    background: #1a2824;
+}
+
+html[data-theme="dark"] .kopsi:has(input:checked) {
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.35);
+}
+
+html[data-theme="dark"] .kopsi .radio {
+    background: #121c19;
+    border-color: #3b4e48;
+}
+
+html[data-theme="dark"] .kopsi input:checked + .radio {
+    background: #076653;
+    border-color: #076653;
+}
+
+html[data-theme="dark"] .peta {
+    filter: brightness(0.55) saturate(0.8);
+}

@@ -45,7 +45,7 @@ sortEl.addEventListener('change', () => {
         if (by === 'murah') return a.dataset.price - b.dataset.price;
         if (by === 'mahal') return b.dataset.price - a.dataset.price;
         if (by === 'lama') return a.dataset.time - b.dataset.time;
-        return b.dataset.time - a.dataset.time; // terbaru diunggah
+        return b.dataset.time - a.dataset.time;
     });
 
     items.forEach((item) => grid.appendChild(item));
@@ -79,6 +79,8 @@ async function ubahStatus(card, status) {
         card.dataset.status = status;
         area.innerHTML = '';
         area.appendChild(cetakan.content.cloneNode(true));
+
+        area.querySelectorAll('[data-edit]').forEach((a) => { a.href = card.dataset.editUrl || '#'; });
     }
 
     hitung();
