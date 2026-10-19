@@ -2,16 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Produk;
+use App\Support\ProdukFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ProdukController extends Controller {
     private const KATEGORI = [
-        'Fashion Pria', 'Fashion Wanita', 'Sepatu', 'Tas & Aksesoris', 'Elektronik',
-        'Gadget', 'Buku & Alat Kuliah', 'Olahraga', 'Perabot', 'Lainnya',
+        'Fashion Pria',
+        'Fashion Wanita',
+        'Sepatu',
+        'Tas & Aksesoris',
+        'Elektronik',
+        'Gadget',
+        'Buku & Alat Kuliah',
+        'Olahraga',
+        'Perabot',
+        'Lainnya',
     ];
 
     public function index() {
@@ -21,28 +29,23 @@ class ProdukController extends Controller {
             ['judul' => 'Jaket Denim Oversize Vintage', 'harga' => 185000, 'status' => 'terjual',  'foto' => 'images/barang-saya/jaket-denim.jpg', 'waktu' => now()->subDays(3)->timestamp],
         ];
 
-        $milikku = [];
-        if (Schema::hasTable('produks')) {
-            $milikku = Produk::where('user_id', Auth::id())
-                ->where('status', '!=', 'arsip')
-                ->latest()
-                ->get()
-                ->map(fn ($p) => [
-                    'id'     => $p->id,
-                    'judul'  => $p->judul,
-                    'harga'  => $p->harga,
-                    'status' => $p->status === 'aktif' ? 'tersedia' : $p->status,
-                    'foto'   => isset($p->foto[0]) ? 'storage/' . $p->foto[0] : null,
-                    'waktu'  => $p->created_at->timestamp,
-                ])
-                ->all();
-        }
+        $milik = array_filter(ProdukFile::milikUser(Auth::id()), fn($p) => $p['status'] !== 'arsip');
+        usort($milik, fn($a, $b) => $b['dibuat'] <=> $a['dibuat']);
+
+        $milikku = array_map(fn($p) => [
+            'id'     => $p['id'],
+            'judul'  => $p['judul'],
+            'harga'  => $p['harga'],
+            'status' => $p['status'],
+            'foto'   => $p['foto'][0] ?? null,
+            'waktu'  => $p['dibuat'],
+        ], $milik);
 
         $barang = array_merge($milikku, $contoh);
 
         $jumlah = ['semua' => count($barang)];
         foreach (['tersedia', 'dipesan', 'terjual'] as $status) {
-            $jumlah[$status] = count(array_filter($barang, fn ($b) => $b['status'] === $status));
+            $jumlah[$status] = count(array_filter($barang, fn($b) => $b['status'] === $status));
         }
 
         return view('barang-saya', [
@@ -56,7 +59,7 @@ class ProdukController extends Controller {
         return view('jual', ['area' => 'Malang, Jawa Timur']);
     }
 
-    public function store(Request $request)  {
+    public function store(Request $request) {
         $upload = $request->input('aksi') !== 'draf';
 
         $request->validate([
@@ -89,19 +92,23 @@ class ProdukController extends Controller {
 
         $paths = [];
         foreach ($request->file('foto', []) as $file) {
-            $paths[] = $file->store('produk', 'public');
+            $nama = Str::random(24) . '.' . $file->extension();
+            $file->move(public_path('uploads/produk'), $nama);
+            $paths[] = 'uploads/produk/' . $nama;
         }
 
-        Produk::create([
+        ProdukFile::tambah([
             'user_id'   => Auth::id(),
             'judul'     => $request->judul,
-            'harga'     => $request->harga,
+            'kategori'  => null,
+            'kondisi'   => 'bekas',
+            'harga'     => (int) $request->harga,
             'area'      => $request->area,
-            'jarak'     => $request->jarak,
+            'jarak'     => (float) $request->jarak,
             'deskripsi' => $request->deskripsi,
             'nego'      => $request->nego,
             'foto'      => $paths,
-            'status'    => $upload ? 'aktif' : 'draf',
+            'status'    => $upload ? 'tersedia' : 'draf',
         ]);
 
         if ($upload) {
@@ -111,20 +118,25 @@ class ProdukController extends Controller {
         return redirect()->route('barang.saya')->with('status', 'Draf produk berhasil disimpan.');
     }
 
-    public function edit(Produk $produk) {
-        abort_unless((int) $produk->user_id === (int) Auth::id(), 403);
+    public function edit(string $produk) {
+        $item = $this->milikSaya($produk);
+
+        $terjual = count(array_filter(
+            ProdukFile::milikUser(Auth::id()),
+            fn($p) => $p['status'] === 'terjual'
+        ));
 
         return view('edit-barang', [
-            'produk'       => $produk,
+            'produk'       => (object) $item,
             'kategori'     => self::KATEGORI,
             'penjual'      => Auth::user(),
-            'totalTerjual' => Produk::where('user_id', Auth::id())->where('status', 'terjual')->count(),
+            'totalTerjual' => $terjual,
             'area'         => 'Malang, Jawa Timur',
         ]);
     }
 
-    public function update(Request $request, Produk $produk) {
-        abort_unless((int) $produk->user_id === (int) Auth::id(), 403);
+    public function update(Request $request, string $produk) {
+        $item = $this->milikSaya($produk);
 
         $harga = $request->input('harga');
         $request->merge(['harga' => is_scalar($harga) ? preg_replace('/\D/', '', (string) $harga) : '']);
@@ -150,22 +162,28 @@ class ProdukController extends Controller {
             'area.required'      => 'Lokasi wajib diisi.',
         ]);
 
-        $produk->update($data);
+        $data['harga'] = (int) $data['harga'];
+        ProdukFile::ubah($item['id'], $data);
 
         return redirect()->route('barang.saya')->with('status', 'Perubahan barang berhasil disimpan.');
     }
 
-    public function ubahStatus(Request $request, Produk $produk) {
-        abort_unless((int) $produk->user_id === (int) Auth::id(), 403);
+    public function ubahStatus(Request $request, string $produk) {
+        $item = $this->milikSaya($produk);
 
         $data = $request->validate([
             'status' => ['required', 'in:tersedia,dipesan,terjual,arsip'],
         ]);
 
-        $produk->update([
-            'status' => $data['status'] === 'tersedia' ? 'aktif' : $data['status'],
-        ]);
+        ProdukFile::ubah($item['id'], ['status' => $data['status']]);
 
         return response()->json(['ok' => true, 'status' => $data['status']]);
+    }
+
+    private function milikSaya(string $id): array {
+        $item = ProdukFile::cari($id);
+        abort_unless($item && (int) $item['user_id'] === (int) Auth::id(), 404);
+
+        return $item;
     }
 }

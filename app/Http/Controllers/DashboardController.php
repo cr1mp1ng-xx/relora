@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Models\Produk;
+use App\Models\User;
 use App\Support\FilterBarang;
+use App\Support\ProdukFile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller {
     public function index(Request $request) {
@@ -17,28 +18,31 @@ class DashboardController extends Controller {
             ['id' => 4, 'nama' => 'Sweater Hoodie Fleece Grey',    'penjual' => 'Eko Prasetyo', 'harga' => 120000, 'lokasi' => 'Blimbing, Malang',  'jarak' => '7.8 km', 'jarak_km' => 7.8, 'foto' => 'images/produk/sweater-hoodie.jpg', 'cod' => true, 'disimpan' => false],
         ];
 
-        $dariDb = [];
-        if (Schema::hasTable('produks')) {
-            $dariDb = Produk::with('user')
-                ->where('status', 'aktif')
-                ->latest()
-                ->get()
-                ->map(fn($p) => [
-                    'id'       => $p->id,
-                    'nama'     => $p->judul,
-                    'penjual'  => $p->user->name ?? 'Penjual',
-                    'harga'    => $p->harga,
-                    'lokasi'   => $p->area,
-                    'jarak'    => ((float) $p->jarak) . ' km',
-                    'jarak_km' => (float) $p->jarak,
-                    'foto'     => isset($p->foto[0]) ? 'storage/' . $p->foto[0] : 'images/produk/jaket-denim.jpg',
-                    'cod'      => true,
-                    'disimpan' => false,
-                ])
-                ->all();
+        $semua = ProdukFile::semua();
+        usort($semua, fn($a, $b) => $b['dibuat'] <=> $a['dibuat']);
+        $namaPenjual = User::whereIn('id', array_column($semua, 'user_id'))->pluck('name', 'id');
+
+        $dariFile = [];
+        foreach ($semua as $p) {
+            if ($p['status'] !== 'tersedia') {
+                continue;
+            }
+
+            $dariFile[] = [
+                'id'       => 'u' . $p['id'],
+                'nama'     => $p['judul'],
+                'penjual'  => $namaPenjual[$p['user_id']] ?? 'Penjual',
+                'harga'    => $p['harga'],
+                'lokasi'   => $p['area'],
+                'jarak'    => ((float) $p['jarak']) . ' km',
+                'jarak_km' => (float) $p['jarak'],
+                'foto'     => $p['foto'][0] ?? 'images/produk/jaket-denim.jpg',
+                'cod'      => true,
+                'disimpan' => false,
+            ];
         }
 
-        $produk = FilterBarang::terapkan(array_merge($dariDb, $produk), $jarak, $harga);
+        $produk = FilterBarang::terapkan(array_merge($dariFile, $produk), $jarak, $harga);
 
         return view('dashboard', [
             'produk'     => $produk,

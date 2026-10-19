@@ -11,7 +11,6 @@
     $deskripsiNow = old('deskripsi', $produk->deskripsi);
     $areaNow = old('area', $produk->area);
 
-    // Informasi si aku penjual yang barusan login ke relora
     $bergabung = $penjual->created_at ? $penjual->created_at->locale('id')->translatedFormat('F Y') : '-';
     $infoPenjual = [
         ['icon' => 'calendar', 'label' => 'Bergabung sejak', 'nilai' => $bergabung],
@@ -22,13 +21,12 @@
 @endphp
 
 @section('content')
-    <form id="form-edit" method="POST" action="{{ route('barang.update', $produk) }}" novalidate>
+    <form id="form-edit" method="POST" action="{{ route('barang.update', $produk->id) }}" novalidate>
         @csrf
         @method('PATCH')
 
         <div class="-mt-7 -mx-4 sm:-mx-7 mb-6 bg-white border-b border-slate-100 px-4 sm:px-7 h-14 flex items-center gap-5">
-            <a href="{{ route('barang.saya') }}" aria-label="Kembali ke Barang Saya"
-                class="text-slate-700 hover:text-[#076653] transition">
+            <a href="{{ route('barang.saya') }}" aria-label="Kembali ke Barang Saya" class="text-slate-700 hover:text-[#076653] transition">
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
             <h1 class="text-base font-bold text-slate-900">Edit Barang</h1>
@@ -53,7 +51,8 @@
 
             <div>
                 <label for="harga" class="text-sm font-semibold text-slate-900">Harga <span class="text-red-500">*</span></label>
-                <div class="mt-2 flex h-12 rounded-xl border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#076653]/25 transition">
+                <div
+                    class="mt-2 flex h-12 rounded-xl border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#076653]/25 transition">
                     <span class="flex items-center px-4 bg-slate-50 border-r border-slate-200 text-xs font-medium text-slate-500">Rp</span>
                     <input id="harga" name="harga" type="text" inputmode="numeric" value="{{ $hargaTampil }}"
                         class="flex-1 min-w-0 px-4 bg-white outline-none text-sm text-slate-800">
@@ -91,9 +90,7 @@
                 <label for="deskripsi" class="text-sm font-semibold text-slate-900">Deskripsi <span class="text-red-500">*</span></label>
                 <div class="relative mt-2">
                     <textarea id="deskripsi" name="deskripsi" maxlength="500"
-                        class="w-full h-[116px] px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm leading-relaxed text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#076653]/25 transition resize-none">
-                        {{ $deskripsiNow }}
-                    </textarea>
+                        class="w-full h-[116px] px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm leading-relaxed text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#076653]/25 transition resize-none">{{ $deskripsiNow }}</textarea>
                     <span id="desc-counter" class="absolute bottom-3 right-4 text-[11px] text-slate-400">0/500</span>
                 </div>
             </div>
@@ -102,7 +99,8 @@
                 <label for="area" class="text-sm font-semibold text-slate-900">Lokasi <span class="text-red-500">*</span></label>
                 <div class="relative mt-2">
                     <x-icon name="pin" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" :filled="true" />
-                    <input id="area" name="area" type="text" maxlength="100" value="{{ $areaNow }}" class="{{ $input }} pl-11">
+                    <input id="area" name="area" type="text" maxlength="100" value="{{ $areaNow }}"
+                        class="{{ $input }} pl-11">
                 </div>
             </div>
         </section>
@@ -110,7 +108,8 @@
         <h2 class="mt-8 mb-3 text-sm font-bold text-slate-900">Lokasi Barang</h2>
         <section class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
             <div class="peta relative h-[188px] rounded-xl overflow-hidden bg-[#EEF2F7]">
-                <svg viewBox="0 0 880 188" preserveAspectRatio="xMidYMid slice" class="absolute inset-0 w-full h-full" aria-hidden="true">
+                <svg viewBox="0 0 880 188" preserveAspectRatio="xMidYMid slice" class="absolute inset-0 w-full h-full"
+                    aria-hidden="true">
                     <rect width="880" height="188" fill="#EEF2F7" />
                     <ellipse cx="470" cy="100" rx="360" ry="90" fill="#D1FAE5" opacity=".35" />
                     <polygon points="360,0 440,0 880,150 880,188 800,188" fill="#DCE3EC" />
@@ -118,9 +117,11 @@
                     <polygon points="290,0 335,0 655,188 605,188" fill="#FCD9A8" />
                     <circle cx="437" cy="93" r="52" fill="#6EE7B7" fill-opacity=".12" stroke="#6EE7B7" />
                     <circle cx="437" cy="93" r="35" fill="#6EE7B7" fill-opacity=".25" stroke="#6EE7B7" />
-                    <ellipse cx="293" cy="112" rx="4" ry="1.6" fill="#94A3B8" opacity=".6" />
+                    <ellipse cx="293" cy="112" rx="4" ry="1.6" fill="#94A3B8"
+                        opacity=".6" />
                     <circle cx="293" cy="91" r="15" fill="#0F5C50" />
-                    <g transform="translate(286 84) scale(.6)" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <g transform="translate(286 84) scale(.6)" fill="none" stroke="#fff" stroke-width="2.4"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                         <circle cx="12" cy="10" r="3" />
                     </g>
@@ -138,7 +139,8 @@
                 </span>
                 <div>
                     <p class="text-sm font-bold text-slate-900">{{ $lokasiLengkap }}</p>
-                    <p class="text-xs text-slate-500 mt-0.5">Jarak dari lokasi Anda: &plusmn; {{ (float) $produk->jarak }} km</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Jarak dari lokasi Anda: &plusmn; {{ (float) $produk->jarak }}
+                        km</p>
                 </div>
             </div>
         </section>
@@ -147,7 +149,8 @@
         <section class="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4">
             <div class="flex items-center justify-between gap-4">
                 <div class="flex items-center gap-3 min-w-0">
-                    <span class="brand-grad shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-base font-bold text-[#0C342C]">
+                    <span
+                        class="brand-grad shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-base font-bold text-[#0C342C]">
                         {{ mb_strtoupper(mb_substr($penjual->name, 0, 1)) }}
                     </span>
                     <div class="min-w-0">
@@ -176,7 +179,8 @@
             </dl>
         </section>
 
-        <button type="submit" id="btn-simpan" class="mt-6 w-full h-12 rounded-xl bg-[#064032] text-sm font-bold text-white hover:bg-[#04352A] transition">
+        <button type="submit" id="btn-simpan"
+            class="mt-6 w-full h-12 rounded-xl bg-[#064032] text-sm font-bold text-white hover:bg-[#04352A] transition">
             Simpan Perubahan
         </button>
     </form>
