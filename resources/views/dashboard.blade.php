@@ -32,7 +32,7 @@
                 <div class="relative aspect-square bg-slate-100">
                     <img src="{{ asset($item['foto']) }}" alt="{{ $item['nama'] }}" class="w-full h-full object-cover" loading="lazy">
 
-                    <button type="button" data-fav aria-label="Simpan ke wishlist"
+                    <button type="button" data-fav data-url="{{ route('wishlist.toggle', $item['id']) }}" aria-label="Simpan ke wishlist"
                         class="fav {{ $item['disimpan'] ? 'is-saved' : '' }} absolute top-3 right-3 w-8 h-8 rounded-full bg-white/95 shadow flex items-center justify-center hover:scale-110 transition">
                         <x-icon name="heart" class="w-4 h-4" />
                     </button>
@@ -68,8 +68,9 @@
         <div class="mt-6 bg-white rounded-2xl border border-dashed border-slate-200 py-14 text-center">
             <p class="text-sm font-semibold text-slate-700">Tidak ada barang yang sesuai filter</p>
             <p class="text-xs text-slate-400 mt-1">Coba perbesar jarak atau naikkan harga maksimal.</p>
-            <a href="{{ route('dashboard') }}"
-                class="inline-block mt-4 px-4 py-2 rounded-xl bg-emerald-50 text-xs font-bold text-[#076653] hover:bg-emerald-100 transition">Reset Filter</a>
+            <a href="{{ route('dashboard') }}"class="inline-block mt-4 px-4 py-2 rounded-xl bg-emerald-50 text-xs font-bold text-[#076653] hover:bg-emerald-100 transition">
+                Reset Filter
+            </a>
         </div>
     @endif
 

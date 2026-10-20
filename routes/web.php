@@ -24,6 +24,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
+    Route::post('/wishlist/{item}', [WishlistController::class, 'toggle'])->name('wishlist.toggle')->where('item', '[A-Za-z0-9]+');
 
     // Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
 
