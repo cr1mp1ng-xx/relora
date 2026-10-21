@@ -8,13 +8,13 @@
 
         <div class="relative">
             <div class="flex flex-wrap items-center gap-3">
-                <span class="bg-[#0F172A] text-white text-[10px] font-bold tracking-wider px-3 py-1.5 rounded-lg">AMAN & PRAKTIS</span>
+                <span class="bg-[#0F172A] text-white text-[10px] font-bold tracking-wider px-3 py-1.5 rounded-lg">AMAN &amp; PRAKTIS</span>
                 <span class="flex items-center gap-1.5 text-xs font-semibold text-slate-800">
                     <x-icon name="check-circle" class="w-4 h-4 text-[#076653]" :filled="true" /> Transaksi Tatap Muka
                 </span>
             </div>
             <h1 class="text-4xl sm:text-[42px] leading-tight font-extrabold text-[#0C342C] mt-3">Transaksi Khusus COD</h1>
-            <p class="text-base text-[#0C342C]/80 mt-1.5">Cek fisik barang langsung & bayar di tempat tanpa kawatir.</p>
+            <p class="text-base text-[#0C342C]/80 mt-1.5">Cek fisik barang langsung &amp; bayar di tempat tanpa kawatir.</p>
         </div>
     </section>
 
@@ -44,16 +44,21 @@
 
                 <div class="p-4 flex flex-col flex-1">
                     <h3 class="text-sm font-bold text-slate-900 leading-snug">{{ $item['nama'] }}</h3>
-                    <p class="flex items-center gap-1.5 text-[11px] text-slate-400 mt-1.5 pb-2.5 border-b border-slate-100">
-                        <x-icon name="store" class="w-3 h-3" /> {{ $item['penjual'] }}
-                    </p>
+                    <div class="flex items-center justify-between gap-2 mt-1.5 pb-2.5 border-b border-slate-100">
+                        <p class="flex items-center gap-1.5 min-w-0 text-[11px] text-slate-400">
+                            <x-icon name="store" class="w-3 h-3 shrink-0" /> <span class="truncate">{{ $item['penjual'] }}</span>
+                        </p>
+                        <a href="{{ route('chat.mulai', $item['id']) }}" title="Chat penjual"
+                            class="shrink-0 inline-flex items-center gap-1 h-6 px-2 rounded-full bg-emerald-50 text-[#076653] text-[10px] font-semibold hover:bg-emerald-100 transition">
+                            <x-icon name="chat" class="w-3 h-3" /> Chat
+                        </a>
+                    </div>
 
                     <p class="text-lg font-bold text-[#076653] mt-2.5">Rp {{ number_format($item['harga'], 0, ',', '.') }}</p>
 
                     <div class="mt-1 flex items-center justify-between gap-2">
                         <p class="flex items-center gap-1.5 text-xs text-slate-500">
-                            <x-icon name="pin" class="w-3 h-3 text-slate-400" :filled="true" />
-                            {{ $item['lokasi'] }}
+                            <x-icon name="pin" class="w-3 h-3 text-slate-400" :filled="true" />{{ $item['lokasi'] }}
                         </p>
                         @if ($item['cod'])
                             <span class="bg-emerald-50 text-[#076653] text-[10px] font-bold px-2.5 py-1 rounded-lg">COD</span>
@@ -68,7 +73,7 @@
         <div class="mt-6 bg-white rounded-2xl border border-dashed border-slate-200 py-14 text-center">
             <p class="text-sm font-semibold text-slate-700">Tidak ada barang yang sesuai filter</p>
             <p class="text-xs text-slate-400 mt-1">Coba perbesar jarak atau naikkan harga maksimal.</p>
-            <a href="{{ route('dashboard') }}"class="inline-block mt-4 px-4 py-2 rounded-xl bg-emerald-50 text-xs font-bold text-[#076653] hover:bg-emerald-100 transition">
+            <a href="{{ route('dashboard') }}" class="inline-block mt-4 px-4 py-2 rounded-xl bg-emerald-50 text-xs font-bold text-[#076653] hover:bg-emerald-100 transition">
                 Reset Filter
             </a>
         </div>

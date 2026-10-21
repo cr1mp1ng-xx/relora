@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProdukController;
@@ -27,6 +28,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/wishlist/{item}', [WishlistController::class, 'toggle'])->name('wishlist.toggle')->where('item', '[A-Za-z0-9]+');
 
     Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat');
+    Route::get('/chat/mulai/{item}', [ChatController::class, 'mulai'])->name('chat.mulai')->where('item', '[A-Za-z0-9]+');
+    Route::post('/chat/{id}/kirim', [ChatController::class, 'kirim'])->name('chat.kirim')->whereNumber('id');
 
     Route::get('/barang-saya', [ProdukController::class, 'index'])->name('barang.saya');
     Route::get('/barang-saya/{produk}/edit', [ProdukController::class, 'edit'])->name('barang.edit');

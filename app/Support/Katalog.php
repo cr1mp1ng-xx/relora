@@ -7,16 +7,16 @@ use App\Models\User;
 class Katalog {
     private static function contoh(): array {
         return [
-            ['id' => 'c1', 'nama' => 'Jaket Denim Oversize Vintage', 'kategori' => 'Fashion Pria', 'penjual' => 'Ahmad Rizky', 'harga' => 185000, 'lokasi' => 'Lowokwaru, Malang', 'jarak' => '2.5 km', 'jarak_km' => 2.5, 'foto' => 'images/produk/jaket-denim.jpg',   'cod' => true],
-            ['id' => 'c2', 'nama' => 'Kaos Polo Katun Premium',       'kategori' => 'Fashion Pria', 'penjual' => 'Budi Santoso', 'harga' => 75000,  'lokasi' => 'Sukun, Malang',     'jarak' => '4.1 km', 'jarak_km' => 4.1, 'foto' => 'images/produk/kaos-polo.jpg',      'cod' => true],
-            ['id' => 'c3', 'nama' => 'Sepatu Sneaker Canvas Casual',  'kategori' => 'Sepatu',       'penjual' => 'Dian Sastro',  'harga' => 210000, 'lokasi' => 'Klojen, Malang',    'jarak' => '1.2 km', 'jarak_km' => 1.2, 'foto' => 'images/produk/sepatu-sneaker.jpg', 'cod' => true],
-            ['id' => 'c4', 'nama' => 'Sweater Hoodie Fleece Grey',    'kategori' => 'Fashion Pria', 'penjual' => 'Eko Prasetyo', 'harga' => 120000, 'lokasi' => 'Blimbing, Malang',  'jarak' => '7.8 km', 'jarak_km' => 7.8, 'foto' => 'images/produk/sweater-hoodie.jpg', 'cod' => true],
+            ['id' => 'c1', 'nama' => 'Jaket Denim Oversize Vintage', 'kategori' => 'Fashion Pria', 'penjual' => 'Ahmad Rizky', 'harga' => 185000, 'lokasi' => 'Lowokwaru, Malang', 'jarak' => '2.5 km', 'jarak_km' => 2.5, 'foto' => 'images/produk/jaket-denim.jpg',   'cod' => true, 'penjual_id' => null, 'nego' => 'nego', 'deskripsi' => 'Jaket denim oversize vintage, bahan tebal dan nyaman. Kondisi masih sangat baik, tidak ada sobekan.'],
+            ['id' => 'c2', 'nama' => 'Kaos Polo Katun Premium',       'kategori' => 'Fashion Pria', 'penjual' => 'Budi Santoso', 'harga' => 75000,  'lokasi' => 'Sukun, Malang',     'jarak' => '4.1 km', 'jarak_km' => 4.1, 'foto' => 'images/produk/kaos-polo.jpg',      'cod' => true, 'penjual_id' => null, 'nego' => 'nego', 'deskripsi' => 'Kaos polo katun premium, ukuran L. Bahan adem, jahitan rapi, jarang dipakai.'],
+            ['id' => 'c3', 'nama' => 'Sepatu Sneaker Canvas Casual',  'kategori' => 'Sepatu',       'penjual' => 'Dian Sastro',  'harga' => 210000, 'lokasi' => 'Klojen, Malang',    'jarak' => '1.2 km', 'jarak_km' => 1.2, 'foto' => 'images/produk/sepatu-sneaker.jpg', 'cod' => true, 'penjual_id' => null, 'nego' => 'pas',  'deskripsi' => 'Sepatu sneaker canvas ukuran 42, kondisi masih sangat baik. Jarang dipakai, tidak ada kerusakan.'],
+            ['id' => 'c4', 'nama' => 'Sweater Hoodie Fleece Grey',    'kategori' => 'Fashion Pria', 'penjual' => 'Eko Prasetyo', 'harga' => 120000, 'lokasi' => 'Blimbing, Malang',  'jarak' => '7.8 km', 'jarak_km' => 7.8, 'foto' => 'images/produk/sweater-hoodie.jpg', 'cod' => true, 'penjual_id' => null, 'nego' => 'nego', 'deskripsi' => 'Sweater hoodie fleece warna grey, tebal dan hangat. Kondisi mulus, tanpa noda.'],
         ];
     }
 
     public static function semua(): array {
         $file = ProdukFile::semua();
-        usort($file, fn ($a, $b) => ($b['dibuat'] ?? 0) <=> ($a['dibuat'] ?? 0));
+        usort($file, fn($a, $b) => ($b['dibuat'] ?? 0) <=> ($a['dibuat'] ?? 0));
 
         $namaPenjual = User::whereIn('id', array_column($file, 'user_id'))->pluck('name', 'id');
 
@@ -37,6 +37,9 @@ class Katalog {
                 'jarak_km' => (float) $p['jarak'],
                 'foto'     => $p['foto'][0] ?? 'images/produk/jaket-denim.jpg',
                 'cod'      => true,
+                'penjual_id' => (int) $p['user_id'],
+                'nego'     => $p['nego'] ?? 'nego',
+                'deskripsi' => $p['deskripsi'] ?? null,
             ];
         }
 
