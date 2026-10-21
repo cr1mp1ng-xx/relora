@@ -17,10 +17,8 @@
 
 @section('content')
 <div class="grid lg:grid-cols-[5fr_7fr] gap-8 lg:gap-10 lg:px-8 items-start">
-
     <section class="bg-white rounded-[28px] border border-slate-100 shadow-sm p-6 sm:p-9">
         <div class="flex items-center gap-5">
-            {{-- Foto profil (sementara huruf pertama nama) --}}
             <div class="shrink-0 w-[104px] h-[104px] rounded-full border-4 border-emerald-400 p-1">
                 <div class="brand-grad w-full h-full rounded-full flex items-center justify-center text-4xl font-bold text-[#0C342C]">
                     {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
