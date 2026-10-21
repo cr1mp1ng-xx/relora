@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
     Route::post('/wishlist/{item}', [WishlistController::class, 'toggle'])->name('wishlist.toggle')->where('item', '[A-Za-z0-9]+');
 
-    // Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+    Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
 
     Route::get('/barang-saya', [ProdukController::class, 'index'])->name('barang.saya');
     Route::get('/barang-saya/{produk}/edit', [ProdukController::class, 'edit'])->name('barang.edit');

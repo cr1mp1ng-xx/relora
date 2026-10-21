@@ -45,8 +45,7 @@
         </form>
 
         @if (request()->routeIs('dashboard', 'wishlist'))
-            <button type="button" data-open-filter
-                class="relative flex shrink-0 items-center gap-1.5 h-10 px-3.5 rounded-xl bg-slate-100 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
+            <button type="button" data-open-filter class="relative flex shrink-0 items-center gap-1.5 h-10 px-3.5 rounded-xl bg-slate-100 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
                 <x-icon name="sliders" class="w-3.5 h-3.5 text-[#076653]" />
                 <span class="hidden sm:inline">Filter</span>
                 @if (($jarak ?? 50) < 50 || ($harga ?? 0) > 0)
@@ -56,13 +55,16 @@
         @endif
 
         <nav class="ml-auto flex items-center gap-1">
-            <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard', 'profil') ? $menuOn : $menu }}">
+            <a href="{{ route('dashboard') }}"
+                class="{{ request()->routeIs('dashboard', 'profil') ? $menuOn : $menu }}">
                 <x-icon name="home" class="w-4 h-4 {{ request()->routeIs('dashboard', 'profil') ? 'text-[#076653]' : 'text-slate-500' }}" :filled="true" />
                 <span class="hidden lg:inline">Beranda</span>
             </a>
 
             <a href="{{ route('wishlist') }}" class="{{ request()->routeIs('wishlist') ? $menuOn : $menu }}">
-                <x-icon name="heart" class="w-4 h-4 {{ request()->routeIs('wishlist') ? 'text-red-500' : 'text-slate-600' }}" :filled="true" />
+                <x-icon name="heart"
+                    class="w-4 h-4 {{ request()->routeIs('wishlist') ? 'text-red-500' : 'text-slate-600' }}"
+                    :filled="true" />
                 <span class="hidden lg:inline">Wishlist</span>
                 <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
             </a>
