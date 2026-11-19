@@ -2,30 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Produk;
+use App\Models\Wishlist;
 use App\Support\FilterBarang;
 use App\Support\Katalog;
-use App\Support\WishlistFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class WishlistController extends Controller {
-    public function index(Request $request) {
+class WishlistController extends Controller
+{
+    public function index(Request $request)
+    {
         [$jarak, $harga] = FilterBarang::baca($request);
 
-        $katalog = [];
-        foreach (Katalog::semua() as $barang) {
-            $katalog[$barang['id']] = $barang;
-        }
+        $daftar = Wishlist::with(['produk.user:id,name', 'produk.kategori:id,nama', 'produk.foto'])
+            ->where('user_id', Auth::id())
+            ->whereHas('produk', function ($q) use ($jarak, $harga) {
+                $q->where('status', 'tersedia')->where('jarak_km', '<=', $jarak);
+                if ($harga > 0) {
+                    $q->where('harga', '<=', $harga);
+                }
+            })
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->get();
 
-        $wishlist = [];
-        foreach (WishlistFile::milik(Auth::id()) as $entri) {
-            if (isset($katalog[$entri['id']])) {
-                $wishlist[] = $katalog[$entri['id']] + ['disimpan' => $entri['waktu']];
-            }
-        }
+        $wishlist = $daftar->map(
+            fn (Wishlist $w) => Katalog::ubah($w->produk) + ['disimpan' => $w->created_at->timestamp]
+        )->all();
 
         return view('wishlist', [
-            'wishlist'   => FilterBarang::terapkan($wishlist, $jarak, $harga),
+            'wishlist'   => $wishlist,
             'area'       => 'Malang, Jawa Timur',
             'jarak'      => $jarak,
             'harga'      => $harga,
@@ -33,17 +40,23 @@ class WishlistController extends Controller {
         ]);
     }
 
-    public function toggle(string $item) {
-        $sudahAda = in_array($item, WishlistFile::idUser(Auth::id()), true);
+    public function toggle(Produk $item)
+    {
+        $ada = Wishlist::where('user_id', Auth::id())->where('produk_id', $item->id)->first();
 
-        abort_unless($sudahAda || Katalog::cari($item), 404);
-
-        $disimpan = WishlistFile::toggle(Auth::id(), $item);
+        if ($ada) {
+            $ada->delete();
+            $disimpan = false;
+        } else {
+            abort_unless($item->status === 'tersedia', 404);
+            Wishlist::create(['user_id' => Auth::id(), 'produk_id' => $item->id]);
+            $disimpan = true;
+        }
 
         return response()->json([
             'ok'       => true,
             'disimpan' => $disimpan,
-            'jumlah'   => count(WishlistFile::idUser(Auth::id())),
+            'jumlah'   => Wishlist::where('user_id', Auth::id())->count(),
         ]);
     }
 }

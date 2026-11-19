@@ -24,19 +24,20 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
-    Route::post('/wishlist/{item}', [WishlistController::class, 'toggle'])->name('wishlist.toggle')->where('item', '[A-Za-z0-9]+');
+    Route::post('/wishlist/{item}', [WishlistController::class, 'toggle'])->name('wishlist.toggle')->whereNumber('item');
 
     Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
-    Route::get('/chat/mulai/{item}', [ChatController::class, 'mulai'])->name('chat.mulai')->where('item', '[A-Za-z0-9]+');
-    Route::post('/chat/{id}/kirim', [ChatController::class, 'kirim'])->name('chat.kirim')->whereNumber('id');
+    Route::get('/chat/mulai/{item}', [ChatController::class, 'mulai'])->name('chat.mulai')->whereNumber('item');
+    Route::post('/chat/{percakapan}/kirim', [ChatController::class, 'kirim'])->name('chat.kirim')->whereNumber('percakapan');
 
     Route::get('/barang-saya', [ProdukController::class, 'index'])->name('barang.saya');
-    Route::get('/barang-saya/{produk}/edit', [ProdukController::class, 'edit'])->name('barang.edit');
-    Route::patch('/barang-saya/{produk}', [ProdukController::class, 'update'])->name('barang.update');
-    Route::patch('/barang-saya/{produk}/status', [ProdukController::class, 'ubahStatus'])->name('barang.status');
+    Route::get('/barang-saya/{produk}/edit', [ProdukController::class, 'edit'])->name('barang.edit')->whereNumber('produk');
+    Route::patch('/barang-saya/{produk}', [ProdukController::class, 'update'])->name('barang.update')->whereNumber('produk');
+    Route::patch('/barang-saya/{produk}/status', [ProdukController::class, 'ubahStatus'])->name('barang.status')->whereNumber('produk');
     Route::get('/jual', [ProdukController::class, 'create'])->name('jual');
     Route::post('/jual', [ProdukController::class, 'store'])->name('jual.store');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

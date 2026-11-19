@@ -2,57 +2,41 @@
 
 namespace App\Support;
 
-use App\Models\User;
+use App\Models\Produk;
 
-class Katalog {
-    private static function contoh(): array {
+class Katalog
+{
+    public static function semua(int $jarak = 50, int $harga = 0): array
+    {
+        $query = Produk::with(['user:id,name', 'kategori:id,nama', 'foto'])
+            ->where('status', 'tersedia')
+            ->where('jarak_km', '<=', $jarak);
+
+        if ($harga > 0) {
+            $query->where('harga', '<=', $harga);
+        }
+
+        return $query->latest()->orderByDesc('id')->get()
+            ->map(fn (Produk $p) => self::ubah($p))
+            ->all();
+    }
+
+    public static function ubah(Produk $p): array
+    {
         return [
-            ['id' => 'c1', 'nama' => 'Jaket Denim Oversize Vintage', 'kategori' => 'Fashion Pria', 'penjual' => 'Ahmad Rizky', 'harga' => 185000, 'lokasi' => 'Lowokwaru, Malang', 'jarak' => '2.5 km', 'jarak_km' => 2.5, 'foto' => 'images/produk/jaket-denim.jpg',   'cod' => true, 'penjual_id' => null, 'nego' => 'nego', 'deskripsi' => 'Jaket denim oversize vintage, bahan tebal dan nyaman. Kondisi masih sangat baik, tidak ada sobekan.'],
-            ['id' => 'c2', 'nama' => 'Kaos Polo Katun Premium',       'kategori' => 'Fashion Pria', 'penjual' => 'Budi Santoso', 'harga' => 75000,  'lokasi' => 'Sukun, Malang',     'jarak' => '4.1 km', 'jarak_km' => 4.1, 'foto' => 'images/produk/kaos-polo.jpg',      'cod' => true, 'penjual_id' => null, 'nego' => 'nego', 'deskripsi' => 'Kaos polo katun premium, ukuran L. Bahan adem, jahitan rapi, jarang dipakai.'],
-            ['id' => 'c3', 'nama' => 'Sepatu Sneaker Canvas Casual',  'kategori' => 'Sepatu',       'penjual' => 'Dian Sastro',  'harga' => 210000, 'lokasi' => 'Klojen, Malang',    'jarak' => '1.2 km', 'jarak_km' => 1.2, 'foto' => 'images/produk/sepatu-sneaker.jpg', 'cod' => true, 'penjual_id' => null, 'nego' => 'pas',  'deskripsi' => 'Sepatu sneaker canvas ukuran 42, kondisi masih sangat baik. Jarang dipakai, tidak ada kerusakan.'],
-            ['id' => 'c4', 'nama' => 'Sweater Hoodie Fleece Grey',    'kategori' => 'Fashion Pria', 'penjual' => 'Eko Prasetyo', 'harga' => 120000, 'lokasi' => 'Blimbing, Malang',  'jarak' => '7.8 km', 'jarak_km' => 7.8, 'foto' => 'images/produk/sweater-hoodie.jpg', 'cod' => true, 'penjual_id' => null, 'nego' => 'nego', 'deskripsi' => 'Sweater hoodie fleece warna grey, tebal dan hangat. Kondisi mulus, tanpa noda.'],
+            'id'         => $p->id,
+            'nama'       => $p->judul,
+            'kategori'   => $p->kategori->nama ?? 'Barang',
+            'penjual'    => $p->user->name ?? 'Penjual',
+            'penjual_id' => $p->user_id,
+            'harga'      => (int) $p->harga,
+            'lokasi'     => $p->area,
+            'jarak'      => ((float) $p->jarak_km) . ' km',
+            'jarak_km'   => (float) $p->jarak_km,
+            'foto'       => $p->foto->first()->path ?? 'images/produk/jaket-denim.jpg',
+            'cod'        => true,
+            'nego'       => $p->nego,
+            'deskripsi'  => $p->deskripsi,
         ];
-    }
-
-    public static function semua(): array {
-        $file = ProdukFile::semua();
-        usort($file, fn($a, $b) => ($b['dibuat'] ?? 0) <=> ($a['dibuat'] ?? 0));
-
-        $namaPenjual = User::whereIn('id', array_column($file, 'user_id'))->pluck('name', 'id');
-
-        $upload = [];
-        foreach ($file as $p) {
-            if (! in_array($p['status'] ?? '', ['tersedia', 'aktif'], true)) {
-                continue;
-            }
-
-            $upload[] = [
-                'id'       => 'u' . $p['id'],
-                'nama'     => $p['judul'],
-                'kategori' => $p['kategori'] ?? null ?: 'Barang',
-                'penjual'  => $namaPenjual[$p['user_id']] ?? 'Penjual',
-                'harga'    => (int) $p['harga'],
-                'lokasi'   => $p['area'],
-                'jarak'    => ((float) $p['jarak']) . ' km',
-                'jarak_km' => (float) $p['jarak'],
-                'foto'     => $p['foto'][0] ?? 'images/produk/jaket-denim.jpg',
-                'cod'      => true,
-                'penjual_id' => (int) $p['user_id'],
-                'nego'     => $p['nego'] ?? 'nego',
-                'deskripsi' => $p['deskripsi'] ?? null,
-            ];
-        }
-
-        return array_merge($upload, self::contoh());
-    }
-
-    public static function cari(string $id): ?array {
-        foreach (self::semua() as $barang) {
-            if ($barang['id'] === $id) {
-                return $barang;
-            }
-        }
-
-        return null;
     }
 }

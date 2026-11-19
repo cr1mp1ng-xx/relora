@@ -2,29 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\ProdukFile;
+use App\Models\Pesan;
+use App\Models\Produk;
 use Illuminate\Support\Facades\Auth;
 
-class ProfilController extends Controller {
-    public function index() {
-        $user = Auth::user();
+class ProfilController extends Controller
+{
+    public function index()
+    {
+        $user = Auth::user(); 
 
-        $milik = ProdukFile::milikUser(Auth::id());
-        $jumlahBarang = count(array_filter($milik, fn ($p) => $p['status'] !== 'arsip'));
-        $terjual      = count(array_filter($milik, fn ($p) => $p['status'] === 'terjual'));
+        $milik = Produk::where('user_id', Auth::id());
+
+        $chatBaru = Pesan::where('pengirim', 'penjual')
+            ->whereNull('dibaca_at')
+            ->whereHas('percakapan', fn ($q) => $q->where('pembeli_id', Auth::id()))
+            ->count();
 
         return view('profil', [
             'user'         => $user,
             'area'         => 'Malang, Jawa Timur',
-            'terjual'      => $terjual,
+            'terjual'      => (clone $milik)->where('status', 'terjual')->count(),
             'areaCod'      => 'Kota Malang',
             'bio'          => [
                 'good items, better prices',
                 'preloved original, masih bagus & worth it!',
                 'COD area Kota Malang',
             ],
-            'jumlahBarang' => $jumlahBarang + 3,
-            'chatBaru'     => 2,
+            'jumlahBarang' => (clone $milik)->where('status', '!=', 'arsip')->count(),
+            'chatBaru'     => $chatBaru,
         ]);
     }
 }
